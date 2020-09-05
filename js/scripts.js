@@ -17,6 +17,7 @@ fetch("https://randomuser.me/api/?results=12")
  */
 function galleryHtml(data) {
   data.results.map((item) => {
+    // create a html mockup for the card
     const html = `
     <div class="card">
         <div class="card-img-container">
@@ -29,8 +30,13 @@ function galleryHtml(data) {
         </div>
     </div>
   `;
+    // insert the mockup before the end of the gallery div tag
     gallery.insertAdjacentHTML("beforeend", html);
   });
+  /**
+   * add event listener to the gallery
+   * when the card is clicked pass the index of the card and pass the data to the gallery container function
+   */
   gallery.addEventListener("click", (e) => {
     galleryContainer(data.results, [...gallery.children].indexOf(e.target));
   });
@@ -41,6 +47,7 @@ function galleryHtml(data) {
  */
 function galleryContainer(results, index) {
   const data = results[index];
+  // create html mockup for the modal container
   const html = `            
   <div class="modal-container">
     <div class="modal">
@@ -74,33 +81,33 @@ function galleryContainer(results, index) {
     </div>
   </div>`;
 
+  // insert the html mockup to the end of the body tag
   document.querySelector("body").insertAdjacentHTML("beforeend", html);
-  document.querySelector(".modal-container").addEventListener("click", (e) => {
-    const elem = e.target;
-    if (
-      elem.className == "modal-container" ||
-      elem.className == "modal-close-btn"
-    ) {
-      document.querySelector(".modal-container").remove();
-    } else if (elem.className == "modal-prev btn") {
-      document.querySelector(".modal-container").remove();
-      if (index == 0) {
-        galleryContainer(results, 12 - 1);
-      } else {
-        galleryContainer(results, index - 1);
-      }
-    } else if (elem.className == "modal-next btn") {
-      document.querySelector(".modal-container").remove();
-      if (index == 11) {
-        galleryContainer(results, -1 + 1);
-      } else {
-        galleryContainer(results, index + 1);
-      }
+
+  // get the modalContainer and assign in to a variable
+  const modalContainer = document.querySelector(".modal-container");
+
+  /**
+   * add event listener to the modalContainer
+   * when the target is clicked with a class:
+   * `modal-container` or `modal-close-btn` it should remove hte modal container
+   * `modal-prev` it should invoke the galleryContainer function again with the index -1 to get the previous object and display the data
+   * `modal-next` it should invoke the galleryContainer function again with the index +1 to get the next object and display the data
+   */
+  modalContainer.addEventListener("click", (e) => {
+    const elem = e.target.className;
+    if (elem == "modal-container" || elem == "modal-close-btn") {
+      modalContainer.remove();
+    } else if (elem == "modal-prev btn") {
+      modalContainer.remove();
+      index == 0
+        ? galleryContainer(results, 12 - 1)
+        : galleryContainer(results, index - 1);
+    } else if (elem == "modal-next btn") {
+      modalContainer.remove();
+      index == 11
+        ? galleryContainer(results, -1 + 1)
+        : galleryContainer(results, index + 1);
     }
   });
 }
-
-/**
- * add event listener to the gallery div
- * on click invoke the galleryContainer function
- */
